@@ -8,20 +8,24 @@ export class UploadToAwsProvider {
   constructor(private readonly configService: ConfigService) {}
 
   public async uploadFile(file: Express.Multer.File) {
-    const s3 = new S3();
+    try {
+      const s3 = new S3();
 
-    file.filename = this.genarateFileName(file);
+      file.filename = this.genarateFileName(file);
 
-    const uploadResult = await s3
-      .upload({
-        Bucket: this.configService.get('appConfig.awsBucketName'),
-        Key: file.filename,
-        Body: file.buffer,
-        ContentType: file.mimetype,
-      })
-      .promise();
+      const uploadResult = await s3
+        .upload({
+          Bucket: this.configService.get('appConfig.awsBucketName'),
+          Key: file.filename,
+          Body: file.buffer,
+          ContentType: file.mimetype,
+        })
+        .promise();
 
-    return uploadResult.Key;
+      return uploadResult.Key;
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
   private genarateFileName(file: Express.Multer.File) {
