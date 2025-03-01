@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { S3 } from 'aws-sdk';
+import path from 'node:path';
 
 @Injectable()
 export class UploadToAwsProvider {
@@ -8,6 +9,8 @@ export class UploadToAwsProvider {
 
   public async uploadFile(file: Express.Multer.File) {
     const s3 = new S3();
+
+    file.filename = this.genarateFileName(file);
 
     const uploadResult = await s3
       .upload({
@@ -18,6 +21,18 @@ export class UploadToAwsProvider {
       })
       .promise();
 
-    return uploadResult.Location;
+    return uploadResult.Key;
+  }
+
+  private genarateFileName(file: Express.Multer.File) {
+    let name = file.originalname.split('.')[0];
+
+    name.replace(/\s/g, '').trim();
+
+    let extension = path.extname(file.originalname);
+
+    let timeStamp = Date.now().toString().trim();
+
+    return `${name}-${timeStamp}${extension}`;
   }
 }
