@@ -10,10 +10,10 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   config.update({
     credentials: {
-      accessKeyId: configService.get('appConfig.awsAccessKeyId'),
-      secretAccessKey: configService.get('appConfig.awsSecretAccessKey'),
+      accessKeyId: configService.get<string>('AWS_ACCESS_KEY_ID'),
+      secretAccessKey: configService.get<string>('AWS_ACCESS_KEY_SECRET'),
     },
-    region: configService.get('appConfig.awsRegion'),
+    region: configService.get<string>('AWS_REGION'),
   });
 
   await app.listen(3000);

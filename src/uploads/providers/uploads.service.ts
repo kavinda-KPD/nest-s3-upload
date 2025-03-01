@@ -1,13 +1,11 @@
 import { Injectable } from '@nestjs/common';
+import { UploadToAwsProvider } from './upload-to-aws.provider';
 
 @Injectable()
 export class UploadsService {
-    constructor() {}
+  constructor(private readonly uploadToAwsProvider: UploadToAwsProvider) {}
 
-    async uploadFile(file: Express.Multer.File) {
-        return {
-            originalname: file.originalname,
-            filename: file.filename,
-        };
-    }
+  async uploadFile(file: Express.Multer.File) {
+    return this.uploadToAwsProvider.uploadFile(file);
+  }
 }
